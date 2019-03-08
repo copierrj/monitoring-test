@@ -14,12 +14,22 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	runtime
+}
+
 dependencies {
+	runtime 'io.prometheus.jmx:jmx_prometheus_javaagent:0.11.0'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
 	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+task fetchRuntimeDependencies(type: Copy) {
+	from configurations.runtime
+	into "$buildDir/libs"
 }
 
 compileKotlin {

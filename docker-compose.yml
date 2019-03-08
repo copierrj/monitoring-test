@@ -5,6 +5,7 @@ services:
     build: demo-app
     ports:
     - "8080:8080"
+    - "7070:9090"
   
   prometheus:
     image: prom/prometheus:v2.7.2

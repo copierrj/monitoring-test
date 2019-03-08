@@ -2,11 +2,12 @@ FROM azul/zulu-openjdk:8 as builder
 
 COPY . /src/
 WORKDIR /src
-RUN ./gradlew --no-daemon bootJar
+RUN ./gradlew --no-daemon fetchRuntimeDependencies bootJar
 
 FROM azul/zulu-openjdk:8
-COPY --from=builder /src/build/libs/*.jar /opt
+COPY --from=builder /src/build/libs/demo-app-*.jar /opt/demo-app.jar
+COPY --from=builder /src/build/libs/jmx_prometheus_javaagent-*.jar /opt/jmx_prometheus_javaagent.jar
+COPY prometheus.yaml /opt/
 WORKDIR /opt
-RUN mv *.jar demo-app.jar
 EXPOSE 8080
-CMD ["java","-jar", "demo-app.jar"]
+CMD ["java", "-javaagent:./jmx_prometheus_javaagent.jar=9090:prometheus.yaml", "-jar", "demo-app.jar"]
