@@ -5,6 +5,15 @@ services:
     build: demo-app
     ports:
     - "8080:8080"
+    
+  cadvisor:
+      image: google/cadvisor:latest
+      container_name: cadvisor
+      volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
   
   prometheus:
     build: prometheus
