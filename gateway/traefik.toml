@@ -1,0 +1,11 @@
+logLevel = "INFO"
+
+defaultEntryPoints = ["http"]
+
+[docker]
+watch = true
+exposedByDefault = false
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"

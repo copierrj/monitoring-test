@@ -1,25 +1,50 @@
 version: '3'
 
 services:
+  gateway:
+    build: gateway
+    ports:
+    - "80:80"
+    volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+    - gateway
+  
   demo:
     build: demo-app
-    ports:
-    - "8080:8080"
-    
+    labels:
+    - traefik.enable=true
+    - "traefik.frontend.rule=PathPrefixStrip: /demo/"
+    networks:
+    - gateway
+    - metrics
+
   cadvisor:
-      image: google/cadvisor:latest
-      volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+    image: google/cadvisor:latest
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+    - metrics
   
   prometheus:
     build: prometheus
-    ports:
-    - "9090:9090"
+    networks:
+    - metrics
     
   grafana:
-    image: grafana/grafana
-    ports:
-    - "3000:3000"
+    build: grafana
+    labels:
+    - traefik.enable=true
+    - "traefik.frontend.rule=PathPrefixStrip: /grafana/"
+    environment:
+    - HOST=192.168.99.100
+    networks:
+    - metrics
+    - gateway
+
+networks:
+  gateway:
+  metrics:
