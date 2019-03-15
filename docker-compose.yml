@@ -5,19 +5,27 @@ services:
     build: gateway
     ports:
     - "80:80"
+    - "8080:8080"
     volumes:
     - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
-    - gateway
+      app:
+      metrics:
+        aliases:
+        - demo.metrics
+        - cadvisor.metrics
   
   demo:
     build: demo-app
     labels:
     - traefik.enable=true
-    - "traefik.frontend.rule=PathPrefixStrip: /demo/"
+    - traefik.app.port=8080
+    - "traefik.app.frontend.rule=PathPrefixStrip: /demo/"
+    - traefik.metrics.frontend.entryPoints=metrics
+    - traefik.metrics.port=9090
+    - "traefik.metrics.frontend.rule=Host: demo.metrics"
     networks:
-    - gateway
-    - metrics
+    - app
 
   cadvisor:
     image: google/cadvisor:latest
@@ -26,11 +34,17 @@ services:
     - /var/run:/var/run:rw
     - /sys:/sys:ro
     - /var/lib/docker/:/var/lib/docker:ro
+    labels:
+    - traefik.enable=true
+    - traefik.frontend.entryPoints=metrics
+    - "traefik.frontend.rule=Host: cadvisor.metrics"
     networks:
-    - metrics
+    - app
   
   prometheus:
     build: prometheus
+    ports:
+    - "9090:9090"
     networks:
     - metrics
     
@@ -43,8 +57,7 @@ services:
     - HOST=192.168.99.100
     networks:
     - metrics
-    - gateway
 
 networks:
-  gateway:
+  app:
   metrics:

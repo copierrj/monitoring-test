@@ -26,4 +26,11 @@ scrape_configs:
     # scheme defaults to 'http'.
 
     static_configs:
-    - targets: ['localhost:9090', 'demo:9090', 'cadvisor:8080']
+    - targets: ['localhost:9090']
+  - job_name: 'app'
+    static_configs:
+    - targets: ['demo.metrics:9090', 'cadvisor.metrics:9090']
+    basic_auth:
+       username: test
+       password: test
+

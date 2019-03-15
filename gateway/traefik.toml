@@ -9,3 +9,10 @@ exposedByDefault = false
 [entryPoints]
   [entryPoints.http]
   address = ":80"
+  
+  [entryPoints.metrics]
+  address = ":9090"
+  [entryPoints.metrics.auth.basic]
+  users = ["test:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/"]
+
+[api]

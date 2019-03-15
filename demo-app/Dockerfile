@@ -10,4 +10,5 @@ COPY --from=builder /src/build/libs/jmx_prometheus_javaagent-*.jar /opt/jmx_prom
 COPY prometheus.yaml /opt/
 WORKDIR /opt
 EXPOSE 8080
+EXPOSE 9090
 CMD ["java", "-javaagent:./jmx_prometheus_javaagent.jar=9090:prometheus.yaml", "-jar", "demo-app.jar"]
